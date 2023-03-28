@@ -1,0 +1,322 @@
+#:kivy 1.10
+
+<MenuScreen>:
+    name: 'menu'
+    FloatLayout:
+        Button:
+            text:'text'
+
+<SetupScreen>:
+    name: 'setup'
+    MDFloatLayout:
+        MDLabel:
+            text: "Select Setup Type"
+            halign: 'center'
+            pos_hint: {'center_x': 0.5,'center_y': 0.9}
+            font_size: self.height * 0.1
+        MDRaisedButton:
+            size_hint: 0.8,0.2
+            pos_hint: {'center_x':0.5,'center_y':0.65}
+            #on_press: root.manager.current = 'defaultsetup'
+            on_press: root.on_press_default_button()
+            MDBoxLayout:
+                orientation: 'vertical'
+                MDLabel:
+                    text: "Default"
+                    halign: 'center'
+                    font_size: self.height * 0.8
+                    color: 0, 0, 0, 1
+                MDLabel:
+                    text:'Sets the internal and external port numbers to 8000'
+                    halign: 'center'
+                    color: 0, 0, 0, 1
+                    font_size: self.height * 0.4
+
+        MDRaisedButton:
+            size_hint: 0.8,0.2
+            pos_hint: {'center_x':0.5,'center_y':0.35}
+            on_press: root.manager.current = 'folder_select'
+            MDBoxLayout: 
+                orientation: 'vertical'
+                MDLabel:
+                    text: "Custom"
+                    halign: 'center'
+                    font_size: self.height * 0.8
+                    color: 0, 0, 0, 1
+                MDLabel:
+                    text: "Input custom internal and external port numbers"
+                    halign: 'center'
+                    font_size: self.height * 0.4
+                    color: 0, 0, 0, 1
+
+<DefaultSetup>:
+    name: 'defaultsetup'
+    MDFloatLayout:
+        MDWidget:
+            pos_hint: {'center_x': 0.0,'center_y': 0.1}
+            center_x: 0.5
+            MDBoxLayout:
+                orientation: 'horizontal'
+                MDRectangleFlatButton:
+                    text: 'Back'
+                    on_press: root.manager.current = 'setup'
+                MDRectangleFlatButton:
+                    text: '22'
+<DialogContent>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: self.minimum_height
+
+    MDTextField:
+        id: folder_name_field
+        text: "New Folder"
+        hint_text: "Enter folder name"
+
+<CustomSetup>:
+    name: 'customsetup'
+    ScreenManager:
+        id: screen_manager
+        Screen:
+            name: "main_screen"
+            MDFloatLayout:
+                MDLabel:
+                    text: "Port Forwarding Config"
+                    pos_hint: {'center_x': 0.5,'center_y': 0.9}
+                    width: root.width
+                    halign: 'center'
+                    font_size: root.height / 20
+                MDLabel:
+                    text: root.internal_ip
+                    pos_hint: {'center_x': 0.6,'center_y': 0.8}
+                MDLabel:
+                    text: root.external_ip
+                    pos_hint: {'center_x': 0.6,'center_y': 0.7}
+                BoxLayout:
+                    orientation: "vertical"
+                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                    size_hint: (0.8, None)
+                    height: dp(120)
+                    
+                    MDLabel:
+                        text: "Internal Port:"
+                        halign: "left"
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                    MDTextField:
+                        id: i_port_input
+                        multiline: False
+                        size_hint_y: None
+                        height: dp(48)
+                        halign: "right"
+                    MDLabel:
+                        text: "External Port:"
+                        halign: "left"
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                    MDTextField:
+                        id: e_port_input
+                        multiline: False
+                        size_hint_y: None
+                        height: dp(48)
+                        halign: "right"
+                MDRaisedButton:
+                    text: "Try UPnP"
+                    pos_hint: {"center_x": 0.25, "center_y": 0.25}
+                    size_hint: (0.3, None)
+                    height: dp(48)
+                    on_press: root.on_press_upnp_button()
+                MDRaisedButton:
+                    text: "Manually Configure"
+                    pos_hint: {"center_x": 0.75, "center_y": 0.25}
+                    size_hint: (0.3, None)
+                    height: dp(48)
+                    on_press: root.on_press_manual_config()
+                BoxLayout:
+                    orientation: "horizontal"
+                    size_hint: (0.8, None)
+                    height: dp(48)
+                    pos_hint: {"center_x": 0.5, "center_y": 0.15}
+                    MDRaisedButton:
+                        text: "Back"
+                        size_hint_x: 0.3
+                        on_press: root.manager.current = 'setup'
+                    #MDRaisedButton:
+                    #    text: "Next"
+                    #    size_hint_x: 0.3
+
+<PasswordScreen>:
+    name: 'password_screen'
+    BoxLayout:
+        orientation: 'vertical'
+        MDTextField:
+            id: password
+            hint_text: 'Enter Password'
+            password: True
+            size_hint: (0.8, None)
+            height: '48dp'
+            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+        MDTextField:
+            id: confirm_password
+            hint_text: 'Confirm Password'
+            password: True
+            size_hint: (0.8, None)
+            height: '48dp'
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+        MDRectangleFlatButton:
+            text: 'Save Password'
+            pos_hint: {'center_x': 0.5, 'center_y': 0.2}
+            on_press: root.save_password()
+
+<PortForwardingScreen>:
+    name: "port_forwarding"
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "20dp"
+        MDLabel:
+            text: "Welcome to Port Forwarding"
+            font_style: "H5"
+            halign: "center"
+        MDLabel:
+            text: "This wizard will guide you through the process of setting up port forwarding on your router."
+            halign: "center"
+        MDRaisedButton:
+            text: "Next"
+            size_hint_x: None
+            pos_hint: {'right': 1.0}
+            on_press: root.manager.current = "port_forwarding_info"
+
+<PortForwardingInfoScreen>:
+    name: "port_forwarding_info"
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "20dp"
+        MDLabel:
+            text: "What is Port Forwarding?"
+            font_style: "H5"
+            halign: "center"
+        MDLabel:
+            text: "Port forwarding allows you to open a specific port on your router, which can then be used to access a service or device on your local network from the internet."
+            halign: "center"
+        MDRaisedButton:
+            text: "Next"
+            on_press: root.manager.current = "port_forwarding_step_one"
+
+<PortForwardingStepOneScreen>:
+    name: "port_forwarding_step_one"
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "20dp"
+        MDLabel:
+            text: "Step 1: Find Your Router's IP Address"
+            font_style: "H5"
+            halign: "center"
+        MDLabel:
+            text: "To access your router's settings, you'll need to know its IP address. This is usually printed on the bottom of the router, or can be found in your network settings on your computer."
+            halign: "center"
+        MDRaisedButton:
+            text: "Next"
+            on_press: root.manager.current = "port_forwarding_step_two"
+
+<PortForwardingStepTwoScreen>:
+    name: "port_forwarding_step_two"
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "20dp"
+        MDLabel:
+            text: "Step 2: Access Your Router's Settings"
+            font_style: "H5"
+            halign: "center"
+        MDLabel:
+            text: "Open a web browser and enter your router's IP address in the address bar. You should see a login screen. If you haven't changed your router's default username and password, you can usually find them printed on the bottom of the router."
+            halign: "center"
+        MDRaisedButton:
+            text: "Next"
+            on_press: root.manager.current = "port_forwarding_step_three"
+
+<PortForwardingStepThreeScreen>:
+    name: "port_forwarding_step_three"
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "20dp"
+        MDLabel:
+            text: "Step 3: Locate the Port Forwarding Settings"
+            font_style: "H5"
+            halign: "center"
+        MDLabel:
+            text: "The location of the port forwarding settings will vary depending on your router. Look for a menu or tab called 'Port Forwarding', 'NAT', or 'Virtual Server'."
+            halign: "center"
+        MDRaisedButton:
+            text: "Next"
+            on_press: root.manager.current = "port_forwarding_step_four"
+
+<PortForwardingStepFourScreen>:
+    name: "port_forwarding_step_four"
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "20dp"
+        MDLabel:
+            text: "Step 4: Add a New Port Forwarding Rule"
+            font_style: "H5"
+            halign: "center"
+        MDLabel:
+            text: "You will need to add a new port forwarding rule to open the desired port. You will need to enter the port number, the protocol (usually TCP), and the local IP address of the device you want to forward the port to."
+            halign: "center"
+        MDRaisedButton:
+            text: "Next"
+            on_press: root.manager.current = "port_forwarding_step_five"
+
+
+<PortForwardingStepFiveScreen>:
+    name: "port_forwarding_step_five"
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "20dp"
+        MDLabel:
+            text: "Step 5: Save Your Changes"
+            font_style: "H5"
+            halign: "center"
+        MDLabel:
+            text: "Once you have added the port forwarding rule, you will need to save your changes. This may require clicking a 'Save' or 'Apply' button, or your changes may be saved automatically."
+            halign: "center"
+        MDRaisedButton:
+            text: "Done"
+            on_press: root.manager.current = "port_forwarding_check"
+
+<PortForwardingCheckScreen>:
+    name: "port_forwarding_check"
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        padding: "20dp"
+        MDLabel:
+            text: "Checking Port Availability"
+            font_style: "H5"
+            halign: "center"
+        MDLabel:
+            text: root.port_status
+            halign: "center"
+        MDRaisedButton:
+            text: "Close"
+            on_press: root.manager.current = "port_forwarding"
+
+<ConnectionOpen>
+    name: 'connection_open'
+    MDBoxLayout:
+        orientation: 'vertical'
+        spacing: '10dp'
+        padding: '20dp'
+        MDLabel:
+            text: "Connection Open"
+            font_style: 'H5'
+            halign: 'center'
+        MDLabel:
+            text: "Awaiting Connections"
+            halign: 'center'
