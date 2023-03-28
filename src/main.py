@@ -7,20 +7,6 @@ import configparser
 import sys
 
 
-
-def server_code():
-
-    def receive_file(client):
-        filename, filesize, size_a, size_r = client.recv(4096).decode().strip().split("|")
-
-        with open(f"{destination_folder}{filename}", "wb") as f:
-            for i in range(int(size_a)):
-                bytes_read = client.recv(4096)
-                f.write(bytes_read)
-            bytes_read = client.recv(int(size_r))
-            f.write(bytes_read)
-            print("file recieved")
-
 class CloudApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
