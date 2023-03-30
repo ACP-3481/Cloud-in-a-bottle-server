@@ -268,6 +268,7 @@ def add_port_mapping(internal_port: int, external_port: int, internal_ip: str, l
 
     # Create a new thread and start it
     t = threading.Thread(target=add_port_mapping_thread)
+    t.daemon = True
     t.start()
 
 class CustomSetup(Screen):
@@ -507,13 +508,15 @@ def accept_connections():
             print('Accepted connection from {}:{}'.format(client_address[0], client_address[1]))
             # Start a new thread to handle the connection
             client_thread = threading.Thread(target=handle_client_connection, args=(client_socket,))
+            client_thread.daemon = True
             client_thread.start()
         except socket.timeout:
-            print('Socket timed out waiting for client connections.')
+            #print('Socket timed out waiting for client connections.')
             # Continue waiting for new connections
             continue
 
 accept_thread = threading.Thread(target=accept_connections)
+accept_thread.daemon = True
 class PortForwardingCheckScreen(Screen):
     port_status = StringProperty()
     def on_enter(self, *args):
