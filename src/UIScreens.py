@@ -279,7 +279,6 @@ class CustomSetup(Screen):
     dialog = None
 
     def on_press_manual_config(self):
-        print("hello")
         internal_port = self.ids.i_port_input.text
         external_port = self.ids.e_port_input.text
         if not internal_port.isnumeric() or not external_port.isnumeric():
@@ -353,6 +352,7 @@ class PortForwardingStepFiveScreen(Screen):
 
 def handle_client_connection(client_socket):
     # encryption setup
+    print("generating key")
     key = RSA.generate(2048)
     rsa_decryptor = PKCS1_OAEP.new(key)
     public_key = key.public_key()
@@ -402,12 +402,15 @@ def handle_client_connection(client_socket):
     hash = hashlib.sha256((password + salt).encode()).hexdigest()
     # if password is not correct, close the connection
     if hash != config['DEFAULT']['hash']:
+        client_socket.send(encrypt_with_padding("Incorrect Password".encode(), session_cipher))
+        increment_nonce()
         client_socket.close()
         raise(ValueError("Incorrect Password"))
+    client_socket.send(encrypt_with_padding("Correct Password".encode(), session_cipher))
+    increment_nonce()
     destination_folder = config['DEFAULT']['destination_folder']
     while True:
         # recieve event
-        print("helloooooo", nonce_int)
         event = decrypt_with_padding(client_socket.recv(1024), session_cipher).decode()
         increment_nonce()
         match(event):
