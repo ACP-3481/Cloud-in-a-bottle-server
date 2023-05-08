@@ -406,7 +406,9 @@ def handle_client_connection(client_socket):
         increment_nonce()
         client_socket.close()
         raise(ValueError("Incorrect Password"))
-    client_socket.send(encrypt_with_padding("Correct Password".encode(), session_cipher))
+    a = encrypt_with_padding('Correct Password'.encode(), session_cipher)
+    client_socket.send(a)
+    print(a)
     increment_nonce()
     destination_folder = config['DEFAULT']['destination_folder']
     while True:
@@ -446,6 +448,7 @@ def handle_client_connection(client_socket):
                     data = f.read()
                 increment_nonce()
                 data_ciphered = session_cipher.encrypt(data)
+                print(f'\ndata ciphered \nsession nonce: {session_cipher.nonce}\n')
                 decrement_nonce()
                 with open(f'{file_path}.nonce', 'r') as f:
                     data = f.read()
@@ -478,17 +481,17 @@ def handle_client_connection(client_socket):
                 update = encrypt_with_padding(json.dumps(name_nonce_pairs).encode(), session_cipher)
                 decrement_nonce()
                 update_size = str(sys.getsizeof(update)).encode()
-                client_socket.send(encrypt_with_padding(update_size, session_cipher))
+                a = encrypt_with_padding(update_size, session_cipher)
+                client_socket.send(a)
+                print(a)
                 client_socket.send(update)
                 increment_nonce()
                 increment_nonce()
 
             case "End":
                 client_socket.close()
+                break
         
-        
-    # close the connection
-    client_socket.close()
 
 thread_open = False
 def accept_connections():
