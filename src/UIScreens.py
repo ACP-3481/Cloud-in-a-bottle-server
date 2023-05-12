@@ -386,7 +386,7 @@ def handle_client_connection(client_socket):
 
         cipher_text = session_cipher.encrypt(data)
         cipher_text_b32 = base64.b32encode(cipher_text)
-        size_difference = 1024 - (sys.getsizeof(cipher_text_b32) % 1024)
+        size_difference = 1024 - (len(cipher_text_b32) % 1024)
         cipher_padded = (cipher_text_b32.decode() + " "*size_difference).encode()
         return cipher_padded
     
@@ -417,8 +417,10 @@ def handle_client_connection(client_socket):
         increment_nonce()
         match(event):
             case "Upload":
+                # enter 2
                 info = decrypt_with_padding(client_socket.recv(1024),session_cipher).decode()
                 increment_nonce()
+                # exit 3
                 filename, name_nonce, data_nonce, size = info.split("|")
                 size = int(size)
                 size_i = size // 1024
@@ -431,8 +433,10 @@ def handle_client_connection(client_socket):
                     bytes_read = client_socket.recv(size_r)
                     f.write(bytes_read)
                 with open(f'{destination_folder}/{filename}', 'r+b') as f:
+                    # enter 3
                     session_decrypt_data = session_cipher.decrypt(f.read())
                     increment_nonce()
+                    # exit 4
                     f.seek(0)
                     f.write(session_decrypt_data)
                 with open(f'{destination_folder}/{filename}.nonce', 'a') as f:
@@ -453,7 +457,7 @@ def handle_client_connection(client_socket):
                 with open(f'{file_path}.nonce', 'r') as f:
                     data = f.read()
                     data_nonce_b32 = data[data.index("\n")+1:].strip().encode()
-                data_size = str(sys.getsizeof(data_ciphered)).encode()
+                data_size = str(len(data_ciphered)).encode()
                 leading_message = data_size + b'|' + data_nonce_b32
                 client_socket.send(encrypt_with_padding(leading_message, session_cipher))
                 increment_nonce()
@@ -482,8 +486,13 @@ def handle_client_connection(client_socket):
                 decrement_nonce()
                 update_size = str(sys.getsizeof(update)).encode()
                 a = encrypt_with_padding(update_size, session_cipher)
-                client_socket.send(a)
+                client_socket.send(a + b' '*(sys.getsizeof(a) - len(a)))
+                print("A")
                 print(a)
+                print(f'size: {sys.getsizeof(a)}\nlen: {len(a)}')
+                print("Nonce")
+                print(session_cipher.nonce)
+                print()
                 client_socket.send(update)
                 increment_nonce()
                 increment_nonce()
